@@ -1,0 +1,27 @@
+services:
+  zipkin:
+    image: openzipkin/zipkin:latest
+    restart: always
+    ports:
+      - "9411:9411"
+
+  appa:
+    build:
+      context: ./servicea
+      dockerfile: Dockerfile
+    container_name: temperatureinput
+    ports:
+      - "8081:8081"
+    depends_on:
+      - appb
+      - zipkin
+
+  appb:
+    build:
+      context: ./serviceb
+      dockerfile: Dockerfile
+    container_name: temperatureserver
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./serviceb/.env:/app/.env
